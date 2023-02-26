@@ -1,0 +1,9 @@
+flask
+pydantic
+pytest
+black
+pymongo
+pyjwt
+argon2-cffi
+requests
+python-dotenv
