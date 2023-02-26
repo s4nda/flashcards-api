@@ -7,3 +7,4 @@ pyjwt
 argon2-cffi
 requests
 python-dotenv
+gunicorn
