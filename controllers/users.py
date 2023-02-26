@@ -115,11 +115,3 @@ class UsersController:
 
 if __name__ == "__main__":
     users = UsersController()
-
-    # sample = {"name": "stevica", "password": "grbavi", "email": "steva@hello.com"}
-    # novi = users.create(User.parse_obj(sample))
-    # print("NOVI", novi)
-
-    # print(users.login(email="sanda@hello.com", password="velikidragojlo"))
-
-    # print(User.dict(exclude={'user', 'value'}))
