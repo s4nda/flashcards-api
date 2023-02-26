@@ -66,5 +66,3 @@ class DecksController:
 
 if __name__ == "__main__":
     decks = DecksController()
-    # sample = {"name": "Physics", "description": "atoms", "user_id": "3ab8cc5e-7420-4c27-ac07-93cc8f6bb4c8"}
-    # novi = decks.create(Deck.parse_obj(sample))

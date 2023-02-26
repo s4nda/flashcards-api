@@ -65,11 +65,4 @@ class CardsController:
 
 if __name__ == "__main__":
     cards = CardsController()
-    sample = {
-        "user_id": "3ab8cc5e-7420-4c27-ac07-93cc8f6bb4c8",
-        "deck_id": "7ad1b084-9d67-4597-bc6f-2e036dcbb424",
-        "front": "kako su elektroni naelektrisani",
-        "back": "negativno",
-    }
 
-    # cards.create(Card.parse_obj(sample))
