@@ -9,8 +9,10 @@ from controllers.users import UsersController, User, UserUpdate
 from controllers.decks import DecksController, Deck, DeckUpdate, DeckQuery
 from controllers.cards import CardsController, Card, CardUpdate, CardQuery
 from config import Config
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 db = get_db_client()
 
 
@@ -21,7 +23,7 @@ def healthcheck():
 
 @app.post("/login")
 def login():
-    body = request.json or {}  # PODACI iz POST
+    body = request.json or {}
     try:
         users = UsersController()
         email = body.get("email", "")
