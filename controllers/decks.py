@@ -1,5 +1,6 @@
 from utils.db import get_db_client
-from pydantic import BaseModel, Field
+from typing import List
+from pydantic import BaseModel, Field, validator
 import uuid
 import time
 
@@ -17,8 +18,15 @@ class Deck(BaseModel):
     description: str | None
     created_at: float = Field(default_factory=time.time)
     updated_at: float = Field(default_factory=time.time)
-    # tags: str | None
+    tags: List["str"] | None = []
     public: bool = False
+
+    @validator("tags", each_item=True)
+    def tags_alphanumeric(cls, value):
+        value = value.lower()
+        if not value.isalnum():
+            raise ValueError("tags must be alphanumeric")
+        return value
 
 
 class DeckUpdate(BaseModel):
@@ -31,6 +39,7 @@ class DeckUpdate(BaseModel):
 class DeckQuery(BaseModel):
     user_id: str | None = None
     public: bool | None = None
+    tags: List["str"] | None = []
 
 
 class DecksController:
@@ -64,5 +73,6 @@ class DecksController:
         return out
 
 
-if __name__ == "__main__":
-    decks = DecksController()
+
+
+

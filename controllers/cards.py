@@ -62,7 +62,3 @@ class CardsController:
             raise Exception("card not found")
         return Card.parse_obj(found_by_id)
 
-
-if __name__ == "__main__":
-    cards = CardsController()
-

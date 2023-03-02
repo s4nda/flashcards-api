@@ -1,7 +1,3 @@
-from dotenv import load_dotenv
-
-load_dotenv()  # take environment variables from .env.
-
 from flask import Flask, request, abort
 from utils.db import get_db_client
 from middleware.require_auth import require_auth
@@ -44,9 +40,24 @@ def create_user_route():
         users = UsersController()
         res = users.create(User.parse_obj(body))
         return res.dict(include=Config.user_fields_allowlist)
+    except ValueError:
+        abort(400)
     except Exception as e:
         print("Error during creating a user", e)
-        abort(401)
+        abort(500)
+
+@app.get("/me")
+@require_auth
+def get_logged_in_user(user:User):
+    try:
+        users = UsersController()
+        found_user = users.get(user.id)
+        return found_user.dict(include=Config.user_fields_allowlist)
+    except Exception as e:
+        print("Error returning user", e)
+        abort(500)
+
+    
 
 
 @app.post("/decks")
@@ -94,6 +105,10 @@ def create_deck_card(user):
         abort(401)
 
 
+class UserMismatchException(Exception):
+    pass
+
+
 @app.delete("/cards/<card_id>")
 @require_auth
 def delete_card(user, card_id):
@@ -101,12 +116,14 @@ def delete_card(user, card_id):
         cards = CardsController()
         found_card = cards.get(card_id)
         if found_card.user_id != user.id:
-            raise Exception("User id does not match")
+            raise UserMismatchException("User id does not match")
         cards.delete(card_id)
         return {"success": True}
+    except UserMismatchException:
+        abort(401)
     except Exception as e:
         print("Error while deleting card", e)
-        abort(401)
+        abort(500)
 
 
 @app.patch("/users/<user_id>")
@@ -257,3 +274,8 @@ def get_deck_card(deck_id, card_id):
     except Exception as e:
         print("Error: Not Found", e)
         abort(404)
+
+
+if __name__ == "__main__":
+    # This server is only for local/debug
+    app.run(port=8080, debug=True)

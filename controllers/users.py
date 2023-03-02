@@ -111,7 +111,3 @@ class UsersController:
             )
             updated = db.users.find_one({"id": found["id"]})
         return User.parse_obj(updated)  # type: ignore
-
-
-if __name__ == "__main__":
-    users = UsersController()

@@ -1,11 +1,21 @@
 # To run the api
 
 ```bash
-flask --app api/main run --reload --port 8080
-
+# for local
+python api/main.py
+# or for production:
 gunicorn "api.main:app"
 ```
 
 API URL: http://localhost:8080
 
 Shut down server with CTRL+C
+
+## Running tests
+
+```bash
+# Terminal 1
+python api/test.py
+# Terminal 2
+pytest tests
+```
