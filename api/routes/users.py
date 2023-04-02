@@ -16,11 +16,9 @@ def create_user():
         users = UsersController()
         res = users.create(User.parse_obj(body))
         return res.dict(include=Config.user_fields_allowlist)
-    except ValueError:
-        abort(400)
     except Exception as e:
         log.error(f"Error during creating a user: {str(e)}")
-        abort(500)
+        return abort(500)
 
 
 # update user

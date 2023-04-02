@@ -4,6 +4,12 @@ import certifi
 
 
 def get_db_client():
-    client = MongoClient(Config.mongodb_uri, tlsCAFile=certifi.where())
+    client = MongoClient(
+        Config.mongodb_uri,
+        connectTimeoutMS=5000,
+        tlsCAFile=None
+        if "localhost" in Config.mongodb_uri
+        else certifi.where(),  # This line may create problems when using docker/local
+    )
     selected_db = client[Config.mongodb_db_name]
     return selected_db

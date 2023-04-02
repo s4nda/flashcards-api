@@ -1,4 +1,4 @@
-class APIException(BaseException):
+class APIException(Exception):
     status_code = None
 
 
