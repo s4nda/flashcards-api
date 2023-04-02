@@ -7,6 +7,7 @@ from utils.logger import log
 from middleware.optional_auth import optional_auth
 from utils.exceptions import NotAuthorized, ResourceNotFound
 
+
 deck_routes = Blueprint("deck", __name__)
 
 

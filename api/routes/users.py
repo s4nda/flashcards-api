@@ -5,6 +5,7 @@ from config import Config
 from utils.logger import log
 from utils.exceptions import ResourceNotFound
 
+
 user_routes = Blueprint("user", __name__)
 
 

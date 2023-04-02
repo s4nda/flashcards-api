@@ -10,7 +10,7 @@ db = get_db_client()
 class Card(BaseModel):
     id: str = Field(default_factory=make_id)
     user_id: str
-    deck_id: str
+    deck_id: str = Field(min_lenght=10)
     front_text: str = Field(min_length=3, max_length=128)
     back_text: str = Field(min_length=1, max_length=256)
     image_url: str | None = None
