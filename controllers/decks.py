@@ -16,6 +16,7 @@ class Deck(BaseModel):
     user_id: str
     name: str = Field(min_length=3, max_length=64)
     description: str | None
+    cover_image_url: str | None = None
     created_at: float = Field(default_factory=time.time)
     updated_at: float = Field(default_factory=time.time)
     tags: list[str] | None = None

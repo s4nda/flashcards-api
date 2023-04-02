@@ -13,6 +13,8 @@ class Card(BaseModel):
     deck_id: str = Field(min_lenght=10)
     front_text: str = Field(min_length=3, max_length=128)
     back_text: str = Field(min_length=1, max_length=256)
+    front_image_url: str | None = None
+    back_image_url: str | None = None
     image_url: str | None = None
     created_at: float = Field(default_factory=time.time)
     updated_at: float = Field(default_factory=time.time)
