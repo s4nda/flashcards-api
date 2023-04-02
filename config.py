@@ -13,6 +13,5 @@ class Config:
     mongodb_db_name = os.getenv("MONGODB_DB_NAME", "")
     # user config
     user_fields_allowlist = {"created_at", "updated_at", "name", "email", "id"}
-
-    # OpenAPI
-    openapi_access_token = os.getenv("OPENAPI_ACCESS_TOKEN", "")
+    # Log level
+    log_level = int(os.getenv("LOG_LEVEL", "40"))

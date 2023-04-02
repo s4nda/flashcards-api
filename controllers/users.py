@@ -5,6 +5,12 @@ import time
 import jwt
 from config import Config
 from argon2 import PasswordHasher
+from utils.exceptions import (
+    ResourceNotFound,
+    ResourceAlreadyExists,
+    NotAuthorized,
+    InvalidToken,
+)
 
 db = get_db_client()
 ph = PasswordHasher()
@@ -46,7 +52,7 @@ class UsersController:
     def create(self, user: User) -> User:
         found_user_by_email = db.users.find_one({"email": user.email})
         if found_user_by_email:
-            raise Exception("user already exists")
+            raise ResourceAlreadyExists("User already exists")
         user_dict = user.dict()
         db.users.insert_one(user_dict)
         created_user = db.users.find_one({"id": user.id})
@@ -64,7 +70,7 @@ class UsersController:
     def get(self, user_id) -> User:
         found_by_id = db.users.find_one({"id": user_id})
         if not found_by_id:
-            raise Exception("user not found")
+            raise ResourceNotFound("User not found")
         return User.parse_obj(found_by_id)
 
     def make_access_token(self, user: User) -> str:
@@ -78,7 +84,7 @@ class UsersController:
     def login(self, email, password) -> UserLogin:
         found = db.users.find_one({"email": email})
         if not found:
-            raise Exception("bad login")
+            raise NotAuthorized("Bad login")
         hashed = found.get("password", "")
         ph.verify(hashed, password)  # Verify the password
         user = User.parse_obj(found)
@@ -89,7 +95,7 @@ class UsersController:
     def request_password_reset(self, email):
         found = db.users.find_one({"email": email})
         if not found:
-            raise Exception("user does not exist")
+            raise ResourceNotFound("user does not exist")
         uid = str(uuid.uuid4())[:8].upper()
         db.users.update_one({"email": email}, {"$set": {"reset_password_token": uid}})
         return found["reset_password_token"]
@@ -97,7 +103,7 @@ class UsersController:
     def reset_password(self, email, token, new_password):
         found = db.users.find_one({"reset_password_token": token})
         if not found:
-            raise Exception("invalid token")
+            raise InvalidToken("Invalid token")
         if found and found.get("email") == email:
             db.users.update_one(
                 {"email": email},

@@ -1,7 +1,8 @@
 from utils.db import get_db_client
 from pydantic import BaseModel, Field
-from controllers.decks import  make_id
+from controllers.decks import make_id
 import time
+from utils.exceptions import ResourceNotFound
 
 db = get_db_client()
 
@@ -45,20 +46,16 @@ class CardsController:
     def delete(self, card_id) -> None:
         db.cards.delete_one({"id": card_id})
 
-    def delete_by_deck_id(self,deck_id)-> None:
+    def delete_by_deck_id(self, deck_id) -> None:
         db.cards.delete_many({"deck_id": deck_id})
 
-    def find(self, query:CardQuery) -> list[Card]:
-        q = query.dict(exclude_unset=True)
-        cards_by_folder = db.cards.find(q)
-        out = []
-        for item in cards_by_folder:
-            out.append(Card.parse_obj(item))
-        return out
+    def find(self, query: CardQuery, limit: int = 20, offset: int = 0) -> list[Card]:
+        q = query.dict(exclude_none=True)
+        cards_by_folder = db.cards.find(q).limit(limit).skip(offset)
+        return [Card.parse_obj(item) for item in cards_by_folder]
 
     def get(self, card_id: str) -> Card:
         found_by_id = db.cards.find_one({"id": card_id})
         if not found_by_id:
-            raise Exception("card not found")
+            raise ResourceNotFound("Card not found")
         return Card.parse_obj(found_by_id)
-

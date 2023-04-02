@@ -1,8 +1,8 @@
 from utils.db import get_db_client
-from typing import List
 from pydantic import BaseModel, Field, validator
 import uuid
 import time
+from utils.exceptions import ResourceNotFound
 
 db = get_db_client()
 
@@ -18,7 +18,7 @@ class Deck(BaseModel):
     description: str | None
     created_at: float = Field(default_factory=time.time)
     updated_at: float = Field(default_factory=time.time)
-    tags: List["str"] | None = []
+    tags: list[str] | None = None
     public: bool = False
 
     @validator("tags", each_item=True)
@@ -39,7 +39,7 @@ class DeckUpdate(BaseModel):
 class DeckQuery(BaseModel):
     user_id: str | None = None
     public: bool | None = None
-    tags: List["str"] | None = []
+    tags: list[str] | None = None
 
 
 class DecksController:
@@ -61,18 +61,12 @@ class DecksController:
     def get(self, deck_id: str) -> Deck:
         found_by_id = db.decks.find_one({"id": deck_id})
         if not found_by_id:
-            raise Exception("deck not found")
+            raise ResourceNotFound("Deck not found")
         return Deck.parse_obj(found_by_id)
 
-    def find(self, query: DeckQuery) -> list[Deck]:
+    def find(self, query: DeckQuery, limit: int = 20, offset: int = 0) -> list[Deck]:
         q = query.dict(exclude_unset=True)
-        decks_find = db.decks.find(q)
-        out = []
-        for item in decks_find:
-            out.append(Deck.parse_obj(item))
-        return out
-
-
-
-
-
+        if q.get("tags") and len(q["tags"]):
+            q["tags"] = {"$all": query.tags}
+        decks_find = db.decks.find(q).limit(limit).skip(offset)
+        return [Deck.parse_obj(item) for item in decks_find]
